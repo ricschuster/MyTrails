@@ -61,5 +61,5 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v5
 
-      - name: Assemble debug APK
-        run: ./gradlew assembleDebug --stacktrace
+      - name: Format, lint, unit tests, assemble
+        run: ./gradlew ktlintCheck lint test assembleDebug --stacktrace

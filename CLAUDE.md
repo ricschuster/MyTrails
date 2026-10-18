@@ -13,7 +13,7 @@ A GPS and mapping app for my own Android phone. Single user, sideloaded, no Play
 
 ## Project status
 
-Pre-design. Stack and feature set are undecided; the next step is to fill in the brief and record the stack choice as an ADR.
+Design. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). No code yet; the next step is a minimal "Hello map" app that installs on the phone.
 
 ## Scope
 
@@ -21,7 +21,7 @@ Personal Android GPS and mapping app. Deliberately NOT a Play Store product, mul
 
 ## Stack
 
-Undecided. To be recorded in an ADR in `docs/decisions/`.
+Native Android: Kotlin, Jetpack Compose, MapLibre Native with offline OSM vector tiles, built with Gradle. See `docs/decisions/0002-native-kotlin-stack.md`. Offline tile format and the driving routing engine are still to be decided in their own ADRs.
 
 ## Commands
 

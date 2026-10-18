@@ -13,7 +13,7 @@ A GPS and mapping app for my own Android phone. Single user, sideloaded, no Play
 
 ## Project status
 
-Design. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). No code yet; the next step is a minimal "Hello map" app that installs on the phone.
+Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). A minimal "Hello map" app shows a map and the live position; the next steps are offline maps and track recording.
 
 ## Scope
 
@@ -25,7 +25,15 @@ Native Android: Kotlin, Jetpack Compose, MapLibre Native with offline OSM vector
 
 ## Commands
 
-To be filled in once the stack is chosen.
+Run from the repo root. Needs JDK 21 (`JAVA_HOME`, for example
+`~/.local/jdks/jdk-21*`) and the Android SDK (`ANDROID_HOME=~/Android/Sdk`, or
+`sdk.dir` in the git-ignored `local.properties`).
+
+- Build debug APK: `./gradlew assembleDebug` (output: `app/build/outputs/apk/debug/app-debug.apk`)
+- Install on a device or emulator: `adb install -r app/build/outputs/apk/debug/app-debug.apk`
+- Emulator: AVD `phone` (Pixel 7, API 36, GPS on). Start with a window:
+  `~/Android/Sdk/emulator/emulator -avd phone`. Fake a GPS fix with
+  `adb -s emulator-5554 emu geo fix <lon> <lat>`.
 
 ## Repo structure
 

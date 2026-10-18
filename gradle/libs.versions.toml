@@ -1,9 +1,9 @@
 [versions]
-agp = "8.11.1"
-kotlin = "2.2.0"
-composeBom = "2025.07.00"
+agp = "9.4.1"
+kotlin = "2.4.21"
+composeBom = "2026.09.00"
 activityCompose = "1.10.1"
-maplibre = "11.13.0"
+maplibre = "13.7.1"
 lifecycle = "2.9.2"
 junit = "4.13.2"
 ktlintPlugin = "13.0.0"
@@ -19,6 +19,5 @@ maplibre-android = { module = "org.maplibre.gl:android-sdk", version.ref = "mapl
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlintPlugin" }

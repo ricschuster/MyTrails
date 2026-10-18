@@ -24,3 +24,11 @@ tmp/
 # Claude Code local overrides (personal, not shared)
 .claude/settings.local.json
 .claude/worktrees/
+
+# Android / Gradle
+.gradle/
+build/
+local.properties
+*.apk
+*.aab
+.kotlin/

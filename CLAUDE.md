@@ -5,44 +5,31 @@ context automatically, so keep it to direction and rules, not a task list.
 
 ## Project name
 
-{{PROJECT_NAME}}
+MyTrails
 
 ## Project purpose
 
-{{One or two paragraphs: what this project is, who it is for, and the core
-idea in plain terms. See `docs/design/00_project_brief.md` for the full
-brief.}}
+A GPS and mapping app for my own Android phone. Single user, sideloaded, no Play Store release planned. See `docs/design/00_project_brief.md`.
 
 ## Project status
 
-{{Where things stand right now: design, pre-build, MVP in progress, etc., and
-what the next milestone is. Open GitHub issues are the live task tracker;
-`docs/design/03_milestones.md` (if present) is the shape of the plan.}}
+Pre-design. Stack and feature set are undecided; the next step is to fill in the brief and record the stack choice as an ADR.
 
 ## Scope
 
-{{What this project is, and just as importantly, what it deliberately is NOT.
-Do not expand scope without a design note in `docs/design/` or an ADR in
-`docs/decisions/`.}}
+Personal Android GPS and mapping app. Deliberately NOT a Play Store product, multi-user, or account-based. Do not expand scope without a design note in `docs/design/` or an ADR in `docs/decisions/`.
 
 ## Stack
 
-{{Languages, frameworks, test runner, deployment target, and any hard
-architectural constraints (for example: "business logic stays framework-free
-under `src/core/` so it is unit-testable"). Link to the relevant ADR(s) in
-`docs/decisions/` for the reasoning.}}
+Undecided. To be recorded in an ADR in `docs/decisions/`.
 
 ## Commands
 
-{{The everyday commands: run, test, lint/typecheck, build. One line each, and
-mark which ones are gates (non-zero exit blocks a merge). Fill in once the
-stack is chosen; `CONTRIBUTING.md` Setup should match.}}
+To be filled in once the stack is chosen.
 
 ## Repo structure
 
-{{Optional: a short map of top-level directories, only if it adds real
-orientation beyond exploring the tree. Keep it brief and expect it to drift;
-when in doubt, explore the tree rather than trusting this section.}}
+Not yet needed; explore the tree.
 
 ## Working rules
 

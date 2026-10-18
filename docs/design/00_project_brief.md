@@ -2,53 +2,36 @@
 
 ## What this is
 
-{{One or two sentences: what {{PROJECT_NAME}} is and the problem it addresses.}}
+MyTrails is a GPS and mapping app for Android.
 
-It is {{a teaching tool / an internal tool / a production service / ...}}, not
-{{whatever it is explicitly not}}. The goal is to {{the outcome for the person
-using it}}.
+It is a personal tool for a single user, not a Play Store product. The goal
+is to have a mapping and GPS app on my own phone that does what I want it to.
 
 ## Who it is for
 
-- {{Primary audience or user.}}
-- {{Secondary audience, if any.}}
-
-{{Any assumptions about the audience: technical level, prior knowledge, access
-requirements.}}
+- Me (the repo owner), on my own Android phone. Installed by sideloading.
 
 ## The core idea (one screen)
 
-{{Describe the central loop or workflow in a few sentences, as if explaining it
-to someone seeing the project for the first time. What does the user do, what
-does the system do in response, what do they see change?}}
-
-## Scope layers (if applicable)
-
-{{If the project has a staged or layered scope (an MVP plus deeper layers over
-the same core), describe each layer briefly and how they share the same
-underlying engine or model. Delete this section if the project is a single
-flat scope.}}
+To be defined. Features are not yet chosen.
 
 ## MVP scope
 
-{{The smallest version that proves the core idea. Enumerate the concrete
-pieces.}}
-
-1.
-2.
-3.
-
-See `docs/design/03_milestones.md` (if present) for the phased plan.
+To be defined.
 
 ## Explicit non-goals (for now)
 
-- {{What this project is deliberately not trying to be or do, and why.}}
+- Play Store release, multi-user support, accounts, or monetization.
 
 ## Design principles
 
-1. {{A principle that should guide tradeoffs, and why it matters here.}}
-2. {{...}}
+1. Single-user and sideloaded: no store compliance or multi-device support
+   needed unless it is cheap.
 
 ## Open questions
 
-- {{Anything still undecided that a reader should know is open, not settled.}}
+- Tech stack (native Kotlin, Flutter, other).
+- Core features: recording tracks, navigation, offline maps, waypoints,
+  importing or exporting GPX?
+- Map source and licensing (for example OpenStreetMap tiles, MapLibre).
+- Offline support and battery use during background location tracking.

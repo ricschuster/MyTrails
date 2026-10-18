@@ -13,15 +13,34 @@ is to have a mapping and GPS app on my own phone that does what I want it to.
 
 ## The core idea (one screen)
 
-To be defined. Features are not yet chosen.
+An offline-capable map that shows where I am, records where I have been, and
+reads and writes GPX so my data is never locked in. Used for hiking, cycling
+and running; the same core serves all three.
 
 ## MVP scope
 
-To be defined.
+1. Live position on the map: position marker, follow mode, compass heading.
+2. Track recording: background GPS recording with start, pause and stop, and
+   saved tracks I can view again.
+3. Offline maps: download map regions ahead of time and use them with no
+   signal.
+4. GPX import and export: load routes and tracks from GPX files, save
+   recorded tracks as GPX.
+
+## Post-MVP candidates (noted, not committed)
+
+- Waypoints: drop, name and navigate to saved points.
+- Route navigation: follow a loaded route with off-route alerts.
+- Trip stats and elevation: distance, time, speed, elevation profile.
+- Route planning: draw or generate routes in the app.
+- Driving navigation: get to trailheads, including on logging roads and other
+  unpaved forest roads. This is an intended eventual feature, so the stack and
+  map data choices should not rule it out.
 
 ## Explicit non-goals (for now)
 
 - Play Store release, multi-user support, accounts, or monetization.
+- Driving navigation is not in the MVP (see post-MVP candidates).
 
 ## Design principles
 
@@ -31,7 +50,5 @@ To be defined.
 ## Open questions
 
 - Tech stack (native Kotlin, Flutter, other).
-- Core features: recording tracks, navigation, offline maps, waypoints,
-  importing or exporting GPX?
 - Map source and licensing (for example OpenStreetMap tiles, MapLibre).
 - Offline support and battery use during background location tracking.

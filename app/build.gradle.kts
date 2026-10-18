@@ -1,13 +1,12 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ktlint)
 }
 
 android {
     namespace = "ca.mytrails.app"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "ca.mytrails.app"
@@ -34,6 +33,8 @@ android {
         abortOnError = true
         // Dependabot owns version updates; these would fail CI on every new release.
         disable += setOf("AndroidGradlePluginVersion", "GradleDependency", "NewerVersionAvailable")
+        // targetSdk stays at 36 until its behaviour changes are tested; compileSdk 37 is needed by Compose.
+        disable += "OldTargetApi"
         // Backup is deliberately off for this sideloaded app; no launcher icon yet.
         disable += setOf("DataExtractionRules", "MissingApplicationIcon")
     }

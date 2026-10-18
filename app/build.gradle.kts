@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.ktlint)
 }
 
 android {
@@ -28,6 +29,15 @@ android {
         targetCompatibility = JavaVersion.VERSION_21
     }
 
+    lint {
+        warningsAsErrors = true
+        abortOnError = true
+        // Dependabot owns version updates; these would fail CI on every new release.
+        disable += setOf("AndroidGradlePluginVersion", "GradleDependency", "NewerVersionAvailable")
+        // Backup is deliberately off for this sideloaded app; no launcher icon yet.
+        disable += setOf("DataExtractionRules", "MissingApplicationIcon")
+    }
+
     buildFeatures {
         compose = true
     }
@@ -42,5 +52,7 @@ dependencies {
     implementation(libs.androidx.activity.compose)
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     implementation(libs.maplibre.android)
+    testImplementation(libs.junit)
 }

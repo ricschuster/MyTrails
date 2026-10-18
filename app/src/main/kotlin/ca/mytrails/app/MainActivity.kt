@@ -18,11 +18,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
@@ -56,9 +56,10 @@ private fun HelloMap() {
                 PackageManager.PERMISSION_GRANTED,
         )
     }
-    val permissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestMultiplePermissions(),
-    ) { result -> hasLocation = result[Manifest.permission.ACCESS_FINE_LOCATION] == true }
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions(),
+        ) { result -> hasLocation = result[Manifest.permission.ACCESS_FINE_LOCATION] == true }
 
     LaunchedEffect(Unit) {
         if (!hasLocation) {
@@ -77,7 +78,12 @@ private fun HelloMap() {
 
     LaunchedEffect(mapView) {
         mapView.getMapAsync { m ->
-            m.cameraPosition = CameraPosition.Builder().target(LatLng(49.28, -123.12)).zoom(4.0).build()
+            m.cameraPosition =
+                CameraPosition
+                    .Builder()
+                    .target(LatLng(49.28, -123.12))
+                    .zoom(4.0)
+                    .build()
             m.setStyle(STYLE_URL) { s ->
                 map = m
                 style = s
@@ -95,18 +101,23 @@ private fun HelloMap() {
 }
 
 @SuppressLint("MissingPermission")
-private fun enableLocation(map: MapLibreMap, style: Style, mapView: MapView) {
+private fun enableLocation(
+    map: MapLibreMap,
+    style: Style,
+    mapView: MapView,
+) {
     map.locationComponent.apply {
         activateLocationComponent(
-            LocationComponentActivationOptions.builder(mapView.context, style)
+            LocationComponentActivationOptions
+                .builder(mapView.context, style)
                 .locationEngine(LocationEngineProxy(GpsLocationEngine(mapView.context)))
                 .locationEngineRequest(
-                    LocationEngineRequest.Builder(1_000L)
+                    LocationEngineRequest
+                        .Builder(1_000L)
                         .setFastestInterval(500L)
                         .setPriority(LocationEngineRequest.PRIORITY_HIGH_ACCURACY)
                         .build(),
-                )
-                .build(),
+                ).build(),
         )
         isLocationComponentEnabled = true
         cameraMode = CameraMode.TRACKING
@@ -121,17 +132,18 @@ private fun rememberMapView(): MapView {
     val mapView = remember { MapView(context) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle
     DisposableEffect(lifecycle, mapView) {
-        val observer = LifecycleEventObserver { _, event ->
-            when (event) {
-                Lifecycle.Event.ON_CREATE -> mapView.onCreate(null)
-                Lifecycle.Event.ON_START -> mapView.onStart()
-                Lifecycle.Event.ON_RESUME -> mapView.onResume()
-                Lifecycle.Event.ON_PAUSE -> mapView.onPause()
-                Lifecycle.Event.ON_STOP -> mapView.onStop()
-                Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
-                else -> Unit
+        val observer =
+            LifecycleEventObserver { _, event ->
+                when (event) {
+                    Lifecycle.Event.ON_CREATE -> mapView.onCreate(null)
+                    Lifecycle.Event.ON_START -> mapView.onStart()
+                    Lifecycle.Event.ON_RESUME -> mapView.onResume()
+                    Lifecycle.Event.ON_PAUSE -> mapView.onPause()
+                    Lifecycle.Event.ON_STOP -> mapView.onStop()
+                    Lifecycle.Event.ON_DESTROY -> mapView.onDestroy()
+                    else -> Unit
+                }
             }
-        }
         lifecycle.addObserver(observer)
         onDispose {
             lifecycle.removeObserver(observer)

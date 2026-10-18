@@ -30,6 +30,9 @@ Run from the repo root. Needs JDK 21 (`JAVA_HOME`, for example
 `sdk.dir` in the git-ignored `local.properties`).
 
 - Build debug APK: `./gradlew assembleDebug` (output: `app/build/outputs/apk/debug/app-debug.apk`)
+- Checks CI runs (do all before pushing): `./gradlew ktlintCheck lint test`.
+  Fix formatting with `./gradlew ktlintFormat`. Lint warnings fail the build;
+  version-currency checks are off because Dependabot handles them.
 - Install on a device or emulator: `adb install -r app/build/outputs/apk/debug/app-debug.apk`
 - Emulator: AVD `phone` (Pixel 7, API 36, GPS on). Start with a window:
   `~/Android/Sdk/emulator/emulator -avd phone`. Fake a GPS fix with

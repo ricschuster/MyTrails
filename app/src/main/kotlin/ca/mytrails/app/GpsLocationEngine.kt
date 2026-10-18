@@ -18,12 +18,13 @@ import org.maplibre.android.location.engine.LocationEngineResult
  * can resolve to Wi-Fi or cell positions. A trail app wants satellite fixes, and
  * this also avoids any dependency on Google Play services.
  */
-class GpsLocationEngine(context: Context) : LocationEngineImpl<LocationListener> {
+class GpsLocationEngine(
+    context: Context,
+) : LocationEngineImpl<LocationListener> {
     private val manager = context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
 
-    override fun createListener(
-        callback: LocationEngineCallback<LocationEngineResult>,
-    ): LocationListener = LocationListener { location -> callback.onSuccess(LocationEngineResult.create(location)) }
+    override fun createListener(callback: LocationEngineCallback<LocationEngineResult>): LocationListener =
+        LocationListener { location -> callback.onSuccess(LocationEngineResult.create(location)) }
 
     @Suppress("MissingPermission")
     override fun getLastLocation(callback: LocationEngineCallback<LocationEngineResult>) {
@@ -50,7 +51,10 @@ class GpsLocationEngine(context: Context) : LocationEngineImpl<LocationListener>
         )
     }
 
-    override fun requestLocationUpdates(request: LocationEngineRequest, pendingIntent: PendingIntent) {
+    override fun requestLocationUpdates(
+        request: LocationEngineRequest,
+        pendingIntent: PendingIntent,
+    ) {
         // Not used: updates are delivered to the in-process listener only.
     }
 

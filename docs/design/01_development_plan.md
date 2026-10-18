@@ -71,7 +71,7 @@ A change is done when:
 Two required checks on `main`:
 
 - `repo-hygiene`: workflow lint, markdown lint, no em dashes, docs structure.
-- `build`: assembles the debug APK on every PR, with Gradle caching.
+- `build`: compiles the app (`assembleDebug`) on every PR, with Gradle caching and no APK upload.
 
 Lint and unit tests join the `build` job as they are added, so the required
 check name does not change. Dependabot keeps GitHub Actions and Gradle

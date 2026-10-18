@@ -81,8 +81,7 @@ Storage options:
 
 Recommendation: Room. Every point is inserted as it arrives, so a crash loses
 at most the last point. GPX is produced on export (#17/#18) from the database.
-Storage engine is hard to reverse, so on approval of this note it gets
-`docs/decisions/0003-room-for-track-storage.md` before #15 starts.
+Recorded in `docs/decisions/0003-room-for-track-storage.md`.
 
 ## Testing
 
@@ -101,8 +100,8 @@ Storage engine is hard to reverse, so on approval of this note it gets
 - Resuming an interrupted track.
 - Waypoints during a recording (post-MVP candidate).
 
-## Decisions for the owner
+## Decisions (approved by the owner)
 
-1. Room for storage (recommended) versus GPX files.
+1. Room for storage (ADR 0003).
 2. Sampling defaults above (5 m or 10 s, 30 m accuracy cut-off).
 3. No background location permission unless phone testing shows it is needed.

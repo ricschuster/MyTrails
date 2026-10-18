@@ -13,7 +13,7 @@ A GPS and mapping app for my own Android phone. Single user, sideloaded, no Play
 
 ## Project status
 
-Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). A minimal "Hello map" app shows a map and the live position; the next steps are offline maps and track recording.
+Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). A minimal "Hello map" app shows a map and the live position; track recording is designed (`docs/design/02_track_recording.md`, ADR 0003) and is the next to build, then GPX export and offline maps.
 
 ## Scope
 

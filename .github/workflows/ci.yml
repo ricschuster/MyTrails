@@ -15,10 +15,8 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
-# Stack-neutral repo hygiene checks only. Add your project's own
-# format/lint/typecheck/test/build job(s) alongside this once the stack is
-# chosen; that is a separate job so this one keeps working with no stack at
-# all.
+# repo-hygiene is stack-neutral. build is the Android job: lint and unit tests
+# are added to it later so the required check name stays the same.
 jobs:
   repo-hygiene:
     runs-on: ubuntu-latest
@@ -53,3 +51,25 @@ jobs:
           test -f docs/decisions/README.md
           test -f docs/handoffs/HANDOFF_TEMPLATE.md
           test -d docs/design
+
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+
+      - uses: gradle/actions/setup-gradle@v5
+
+      - name: Assemble debug APK
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: Upload debug APK
+        uses: actions/upload-artifact@v5
+        with:
+          name: app-debug
+          path: app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 14

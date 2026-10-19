@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -42,6 +43,7 @@ fun TracksScreen(
     onOpen: (Long) -> Unit,
     onBack: () -> Unit,
 ) {
+    val importGpx = rememberGpxImporter { ids -> ids.firstOrNull()?.let(onOpen) }
     val dao = TrackDatabase.get(LocalContext.current).trackDao()
     val tracks by remember { dao.observeTracks() }.collectAsStateWithLifecycle(emptyList())
     val scope = rememberCoroutineScope()
@@ -54,6 +56,8 @@ fun TracksScreen(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 TextButton(onClick = onBack) { Text(stringResource(R.string.back)) }
                 Text(stringResource(R.string.tracks), style = MaterialTheme.typography.titleLarge)
+                Spacer(Modifier.weight(1f))
+                TextButton(onClick = importGpx) { Text(stringResource(R.string.import_gpx)) }
             }
             if (tracks.isEmpty()) {
                 Text(

@@ -3,12 +3,34 @@ package ca.mytrails.app
 import android.Manifest
 import android.annotation.SuppressLint
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import ca.mytrails.app.recording.RecordingService
+import ca.mytrails.app.recording.RecordingStatus
+import ca.mytrails.app.recording.formatDistance
+import ca.mytrails.app.recording.formatElapsed
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -97,7 +119,108 @@ private fun HelloMap() {
         if (m != null && s != null && hasLocation) enableLocation(m, s, mapView)
     }
 
-    AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
+    Box(Modifier.fillMaxSize()) {
+        AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
+        RecordingControls(
+            hasLocation = hasLocation,
+            modifier = Modifier.align(Alignment.BottomCenter),
+        )
+    }
+}
+
+@Composable
+private fun RecordingControls(
+    hasLocation: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val context = LocalContext.current
+    val state by RecordingService.state.collectAsStateWithLifecycle()
+    var confirmDiscard by remember { mutableStateOf(false) }
+
+    // Notification permission is asked on the first record tap; recording works without it.
+    val notificationLauncher =
+        rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+            RecordingService.send(context, RecordingService.ACTION_START)
+        }
+
+    Surface(
+        modifier = modifier.navigationBarsPadding().padding(16.dp),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 6.dp,
+        shadowElevation = 6.dp,
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+        ) {
+            if (state.status == RecordingStatus.IDLE) {
+                Button(
+                    enabled = hasLocation,
+                    onClick = {
+                        val needsAsk =
+                            Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+                                ContextCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) !=
+                                PackageManager.PERMISSION_GRANTED
+                        if (needsAsk) {
+                            notificationLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                        } else {
+                            RecordingService.send(context, RecordingService.ACTION_START)
+                        }
+                    },
+                ) { Text(stringResource(R.string.record)) }
+            } else {
+                Text("${formatElapsed(state.elapsedMillis)}  \u00b7  ${formatDistance(state.distanceMeters)}")
+                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                    OutlinedButton(
+                        onClick = {
+                            val action =
+                                if (state.status == RecordingStatus.PAUSED) {
+                                    RecordingService.ACTION_RESUME
+                                } else {
+                                    RecordingService.ACTION_PAUSE
+                                }
+                            RecordingService.send(context, action)
+                        },
+                    ) {
+                        Text(
+                            stringResource(
+                                if (state.status == RecordingStatus.PAUSED) R.string.resume else R.string.pause,
+                            ),
+                        )
+                    }
+                    Button(
+                        onClick = {
+                            if (state.pointCount < 2) {
+                                confirmDiscard = true
+                            } else {
+                                RecordingService.send(context, RecordingService.ACTION_STOP)
+                            }
+                        },
+                    ) { Text(stringResource(R.string.stop)) }
+                }
+            }
+        }
+    }
+
+    if (confirmDiscard) {
+        AlertDialog(
+            onDismissRequest = { confirmDiscard = false },
+            title = { Text(stringResource(R.string.discard_title)) },
+            text = { Text(stringResource(R.string.discard_message)) },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmDiscard = false
+                        RecordingService.send(context, RecordingService.ACTION_STOP)
+                    },
+                ) { Text(stringResource(R.string.discard)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmDiscard = false }) { Text(stringResource(R.string.cancel)) }
+            },
+        )
+    }
 }
 
 @SuppressLint("MissingPermission")

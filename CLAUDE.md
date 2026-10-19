@@ -13,7 +13,7 @@ A GPS and mapping app for my own Android phone. Single user, sideloaded, no Play
 
 ## Project status
 
-Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). The app shows a map and the live position, records tracks in a foreground service into Room (`docs/design/02_track_recording.md`, ADR 0003), lists and views saved tracks, exports them as GPX, and draws an offline map from PMTiles region files (`docs/design/04_offline_maps.md`, ADR 0004). Next are GPX import and hillshade. Not yet run outdoors on a physical phone with the screen off.
+Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). The app shows a map and the live position, records tracks in a foreground service into Room (`docs/design/02_track_recording.md`, ADR 0003), lists and views saved tracks, exports and imports GPX, and draws an offline map from PMTiles region files with optional hillshade (`docs/design/04_offline_maps.md`, ADR 0004). The marker follows the position and a Re-centre button resumes following after a pan. Recording survived an 11 minute outdoor walk with the screen off on a Pixel 9 Pro, unplugged. A trail outing of an hour or more is still to do.
 
 ## Scope
 
@@ -36,7 +36,10 @@ Run from the repo root. Needs JDK 21 (`JAVA_HOME`, for example
 - Install on a device or emulator: `adb install -r app/build/outputs/apk/debug/app-debug.apk`
 - Emulator: AVD `phone` (Pixel 7, API 36, GPS on). Start with a window:
   `~/Android/Sdk/emulator/emulator -avd phone`. Fake a GPS fix with
-  `adb -s emulator-5554 emu geo fix <lon> <lat>`.
+  `adb -s emulator-5554 emu geo fix <lon> <lat>`. The default GPU mode crashed
+  the emulator once on the map screen; add `-gpu swiftshader_indirect` for a
+  stable run, and start it detached (`setsid nohup ... > log 2>&1 &`) so a crash
+  cannot take a terminal session down.
 
 ## Repo structure
 

@@ -177,8 +177,29 @@ None added. The map makes no network requests; dropping `INTERNET` is left for l
 - `INTERNET` stays in the manifest for now. The map no longer uses it, but
   MapLibre's HTTP stack has not been checked without it.
 
+## Hillshade (built, #44)
+
+- A file named `<name>-terrain.pmtiles` in the regions folder is read as
+  Terrarium elevation tiles and drawn as a hillshade under the trail layers. It
+  is optional and independent of the trail file. `tools/tiles/build-terrain.sh`
+  makes it from Mapterhorn with the `pmtiles` CLI.
+- A `raster-dem` source works from a local PMTiles file in MapLibre Native 13.7.1
+  with `"encoding": "terrarium"` and `"tileSize": 512`; checked on the emulator.
+- Size for the 10 by 13 km Roberts Creek area: 23 MB to zoom 15 (2.7 MB of that
+  is zoom 0 to 12), 9 MB to zoom 14. Mapterhorn's source data for this area
+  stops at zoom 15. Zoom 15 is kept so the shading stays sharp when zoomed in.
+- The land fill in `region-layers.json` is 70% opaque so the shading shows
+  through; the hillshade layer sits right above the background.
+- Licences read: Open Government Licence - Canada 2.0 (Canada DTM) allows any
+  lawful use with the source acknowledged ("Contains information licensed under
+  the Open Government Licence - Canada."). The Copernicus WorldDEM-30 licence
+  grants reproduction, distribution and adaptation, free of charge, with the
+  notice "© DLR e.V. 2010-2014 and © Airbus Defence and Space GmbH 2014-2018
+  provided under COPERNICUS by the European Union and ESA; all rights reserved."
+  Both attribution duties apply when the data is communicated or distributed to
+  others. The app is personal and not distributed, so no on-map credit is shown.
+  Add the credits to an About screen if the app or its files are ever shared.
+
 ## Still open
 
-- Terrain (hillshade) is not built. Tracked as its own issue: terrain file size,
-  whether a `raster-dem` source works from a local PMTiles file, and the full
-  licence texts.
+- Contour lines (see Terrain above).

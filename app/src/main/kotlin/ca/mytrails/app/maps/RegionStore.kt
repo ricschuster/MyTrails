@@ -10,11 +10,15 @@ data class Region(
 ) {
     val name: String get() = file.nameWithoutExtension
     val isReadable: Boolean get() = bounds != null
+
+    /** A `<name>-terrain.pmtiles` file holds Terrarium elevation tiles for hillshade, not trails. */
+    val isTerrain: Boolean get() = name.endsWith(RegionStore.TERRAIN_SUFFIX, ignoreCase = true)
 }
 
 object RegionStore {
     const val DIRECTORY = "regions"
     const val EXTENSION = "pmtiles"
+    const val TERRAIN_SUFFIX = "-terrain"
 
     /** Lists region files in [dir], sorted by name. A missing folder is an empty list. */
     fun scan(dir: File): List<Region> =

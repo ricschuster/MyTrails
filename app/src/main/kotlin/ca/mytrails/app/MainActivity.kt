@@ -303,7 +303,7 @@ private fun RecordingControls(
 
 /** Starts on the first installed region, or the whole world when there is none. */
 private fun initialCamera(regions: List<Region>): CameraPosition {
-    val bounds = regions.firstNotNullOfOrNull { it.bounds } ?: return CameraPosition.Builder().target(LatLng(0.0, 0.0)).zoom(1.0).build()
+    val bounds = regions.filterNot { it.isTerrain }.firstNotNullOfOrNull { it.bounds } ?: return CameraPosition.Builder().target(LatLng(0.0, 0.0)).zoom(1.0).build()
     return CameraPosition
         .Builder()
         .target(LatLng(bounds.centerLat, bounds.centerLon))

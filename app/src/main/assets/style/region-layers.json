@@ -9,7 +9,8 @@
         ["bare_rock", "scree"], "#e2ddd6",
         ["residential", "commercial", "industrial"], "#e6e1d8",
         ["park", "nature_reserve", "national_park", "protected_area", "golf_course"], "#dcebc9",
-        "#ebe7df"]
+        "#ebe7df"],
+      "fill-opacity": 0.7
     }
   },
   {

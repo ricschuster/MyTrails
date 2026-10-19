@@ -11,3 +11,10 @@
 
 Layer and attribute names in `trails.yml` are used by
 `app/src/main/assets/style/region-layers.json`; change them together.
+
+## Hillshade (optional)
+
+`PMTILES=pmtiles tools/tiles/build-terrain.sh <name> <min_lon,min_lat,max_lon,max_lat>`
+downloads Mapterhorn elevation tiles for the same bounds (about 23 MB for
+10 by 13 km) and writes `<name>-terrain.pmtiles`. Push it into the same
+`regions/` folder; the app draws it as hillshade under the trails.

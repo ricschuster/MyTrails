@@ -6,6 +6,6 @@
 {{sources}}
   },
   "layers": [
-    {"id": "background", "type": "background", "paint": {"background-color": "#f2efe9"}}{{layers}}
+    {"id": "background", "type": "background", "paint": {"background-color": "#f2efe9"}}{{hillshade}}{{layers}}
   ]
 }

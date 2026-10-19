@@ -59,4 +59,22 @@ class MapStyleTest {
         val ids = Regex("\"id\": \"([^\"]+)\"").findAll(style).map { it.groupValues[1] }.toList()
         assertEquals(ids.size, ids.toSet().size)
     }
+
+    @Test
+    fun terrainFileAddsHillshadeUnderTheTrails() {
+        val style = MapStyle.build(base, layers, listOf(region("/a/one.pmtiles"), region("/a/one-terrain.pmtiles")))
+        assertTrue(style.contains("\"type\": \"raster-dem\""))
+        assertTrue(style.contains("pmtiles://file:///a/one-terrain.pmtiles"))
+        assertEquals(1, count(style, "\"id\": \"hillshade0\""))
+        assertEquals(1, count(style, "\"id\": \"trails0\""))
+        assertTrue(style.indexOf("hillshade0") < style.indexOf("\"id\": \"landuse0\""))
+        assertFalse(style.contains("{{"))
+    }
+
+    @Test
+    fun terrainFileIsNotDrawnAsTrailRegion() {
+        val style = MapStyle.build(base, layers, listOf(region("/a/one-terrain.pmtiles")))
+        assertFalse(style.contains("\"type\": \"vector\""))
+        assertFalse(style.contains("landuse"))
+    }
 }

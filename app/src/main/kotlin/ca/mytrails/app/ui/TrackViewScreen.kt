@@ -2,6 +2,7 @@ package ca.mytrails.app.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
@@ -54,6 +55,7 @@ fun TrackViewScreen(
     val dao = TrackDatabase.get(LocalContext.current).trackDao()
     var track by remember { mutableStateOf<TrackEntity?>(null) }
     val mapView = rememberMapView()
+    val exportGpx = rememberGpxExporter()
     val lineColor = MaterialTheme.colorScheme.primary.toArgb()
 
     LaunchedEffect(trackId) {
@@ -100,7 +102,14 @@ fun TrackViewScreen(
         ) {
             Box(Modifier.padding(horizontal = 4.dp)) {
                 Column(Modifier.padding(8.dp)) {
-                    TextButton(onClick = onBack) { Text(stringResource(R.string.back)) }
+                    Row {
+                        TextButton(onClick = onBack) { Text(stringResource(R.string.back)) }
+                        track?.let {
+                            TextButton(enabled = canExport(it), onClick = { exportGpx(it) }) {
+                                Text(stringResource(R.string.export))
+                            }
+                        }
+                    }
                     track?.let {
                         Text(it.name, style = MaterialTheme.typography.titleMedium)
                         Text("${formatDistance(it.distanceMeters)}  ·  ${formatElapsed(it.durationMillis)}")

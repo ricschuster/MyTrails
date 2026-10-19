@@ -45,6 +45,7 @@ fun TracksScreen(
     val dao = TrackDatabase.get(LocalContext.current).trackDao()
     val tracks by remember { dao.observeTracks() }.collectAsStateWithLifecycle(emptyList())
     val scope = rememberCoroutineScope()
+    val exportGpx = rememberGpxExporter()
     var renaming by remember { mutableStateOf<TrackEntity?>(null) }
     var deleting by remember { mutableStateOf<TrackEntity?>(null) }
 
@@ -66,6 +67,7 @@ fun TracksScreen(
                     TrackRow(
                         track = track,
                         onOpen = { onOpen(track.id) },
+                        onExport = { exportGpx(track) },
                         onRename = { renaming = track },
                         onDelete = { deleting = track },
                     )
@@ -120,6 +122,7 @@ fun TracksScreen(
 private fun TrackRow(
     track: TrackEntity,
     onOpen: () -> Unit,
+    onExport: () -> Unit,
     onRename: () -> Unit,
     onDelete: () -> Unit,
 ) {
@@ -135,6 +138,7 @@ private fun TrackRow(
                 Text(stringResource(it), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.error)
             }
         }
+        TextButton(enabled = canExport(track), onClick = onExport) { Text(stringResource(R.string.export)) }
         TextButton(onClick = onRename) { Text(stringResource(R.string.rename)) }
         TextButton(onClick = onDelete) { Text(stringResource(R.string.delete)) }
     }

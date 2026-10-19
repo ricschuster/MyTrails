@@ -21,4 +21,7 @@
     <string name="delete_title">Delete track?</string>
     <string name="state_interrupted">Interrupted</string>
     <string name="state_recording">Recording</string>
+    <string name="export">Export</string>
+    <string name="export_done">Track exported as GPX</string>
+    <string name="export_failed">Export failed</string>
 </resources>

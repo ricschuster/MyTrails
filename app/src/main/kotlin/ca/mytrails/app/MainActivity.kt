@@ -60,6 +60,7 @@ import org.maplibre.android.MapLibre
 import org.maplibre.android.camera.CameraPosition
 import org.maplibre.android.geometry.LatLng
 import org.maplibre.android.location.LocationComponentActivationOptions
+import org.maplibre.android.location.OnCameraTrackingChangedListener
 import org.maplibre.android.location.engine.LocationEngineProxy
 import org.maplibre.android.location.engine.LocationEngineRequest
 import org.maplibre.android.location.modes.CameraMode
@@ -162,6 +163,7 @@ private fun MapScreen(
     val mapView = rememberMapView()
     var map by remember { mutableStateOf<MapLibreMap?>(null) }
     var style by remember { mutableStateOf<Style?>(null) }
+    var following by remember { mutableStateOf(true) }
 
     LaunchedEffect(mapView, styleVersion) {
         val loaded = loadStyle(context)
@@ -178,7 +180,7 @@ private fun MapScreen(
     LaunchedEffect(map, style, hasLocation) {
         val m = map
         val s = style
-        if (m != null && s != null && hasLocation) enableLocation(m, s, mapView)
+        if (m != null && s != null && hasLocation) enableLocation(m, s, mapView) { following = it }
     }
 
     Box(Modifier.fillMaxSize()) {
@@ -196,6 +198,18 @@ private fun MapScreen(
             Row {
                 TextButton(onClick = onShowTracks) { Text(stringResource(R.string.tracks)) }
                 TextButton(onClick = onShowRegions) { Text(stringResource(R.string.regions)) }
+            }
+        }
+        if (hasLocation && !following) {
+            Surface(
+                modifier = Modifier.align(Alignment.TopEnd).safeDrawingPadding().padding(8.dp),
+                shape = MaterialTheme.shapes.large,
+                tonalElevation = 6.dp,
+                shadowElevation = 6.dp,
+            ) {
+                TextButton(onClick = { map?.locationComponent?.cameraMode = CameraMode.TRACKING }) {
+                    Text(stringResource(R.string.recentre))
+                }
             }
         }
         Text(
@@ -316,6 +330,7 @@ private fun enableLocation(
     map: MapLibreMap,
     style: Style,
     mapView: MapView,
+    onFollowingChanged: (Boolean) -> Unit,
 ) {
     map.locationComponent.apply {
         activateLocationComponent(
@@ -333,6 +348,14 @@ private fun enableLocation(
         isLocationComponentEnabled = true
         cameraMode = CameraMode.TRACKING
         renderMode = RenderMode.COMPASS
+        // Panning the map drops out of tracking; the Re-centre button brings it back.
+        addOnCameraTrackingChangedListener(
+            object : OnCameraTrackingChangedListener {
+                override fun onCameraTrackingChanged(currentMode: Int) = onFollowingChanged(currentMode != CameraMode.NONE)
+
+                override fun onCameraTrackingDismissed() = onFollowingChanged(false)
+            },
+        )
     }
     map.locationComponent.zoomWhileTracking(TRACKING_ZOOM)
 }

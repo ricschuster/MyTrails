@@ -1,0 +1,233 @@
+# Planetiler schema for the MyTrails offline trail map (docs/design/04_offline_maps.md).
+# Build with build-region.sh. Layer ids and attribute names are used by the style in
+# app/src/main/assets/style/, so change them together.
+schema_name: MyTrails trails
+schema_description: Trail-focused OSM vector tiles with surface and difficulty tags kept
+attribution: <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>
+version: 1.0.0
+
+args:
+  osm_path:
+    description: Local OSM extract (.osm.pbf)
+    default: data/sources/osm.osm.pbf
+
+sources:
+  osm:
+    type: osm
+    local_path: ${ args.osm_path }
+
+layers:
+  - id: landuse
+    features:
+      - source: osm
+        geometry: polygon
+        min_zoom: 8
+        include_when:
+          landuse:
+            - forest
+            - residential
+            - farmland
+            - meadow
+            - grass
+            - industrial
+            - commercial
+            - cemetery
+          natural:
+            - wood
+            - scrub
+            - wetland
+            - grassland
+            - bare_rock
+            - scree
+          leisure:
+            - park
+            - nature_reserve
+            - golf_course
+          boundary:
+            - national_park
+            - protected_area
+        attributes:
+          - key: class
+            value:
+              coalesce:
+                - tag_value: landuse
+                - tag_value: natural
+                - tag_value: leisure
+                - tag_value: boundary
+    tile_post_process:
+      merge_polygons:
+        min_area: 2
+
+  - id: water
+    features:
+      - source: osm
+        geometry: polygon
+        min_zoom: 4
+        include_when:
+          natural: water
+          waterway: riverbank
+          landuse: reservoir
+        attributes:
+          - key: name
+            min_zoom: 10
+            tag_value: name
+
+  - id: waterway
+    features:
+      - source: osm
+        geometry: line
+        min_zoom: 9
+        include_when:
+          waterway:
+            - river
+            - stream
+            - canal
+        attributes:
+          - key: class
+            tag_value: waterway
+          - key: name
+            min_zoom: 11
+            tag_value: name
+
+  - id: roads
+    features:
+      - source: osm
+        geometry: line
+        min_zoom:
+          default_value: 13
+          overrides:
+            5:
+              highway: motorway%
+            7:
+              highway: trunk%
+            8:
+              highway: primary%
+            10:
+              highway: secondary%
+            11:
+              highway: tertiary%
+            12:
+              highway:
+                - unclassified
+                - residential
+                - living_street
+        include_when:
+          highway:
+            - motorway
+            - motorway_link
+            - trunk
+            - trunk_link
+            - primary
+            - primary_link
+            - secondary
+            - secondary_link
+            - tertiary
+            - tertiary_link
+            - unclassified
+            - residential
+            - living_street
+            - service
+        attributes:
+          - key: class
+            tag_value: highway
+          - key: name
+            min_zoom: 11
+            tag_value: name
+          - key: surface
+            min_zoom: 13
+            tag_value: surface
+
+  - id: trails
+    features:
+      - source: osm
+        geometry: line
+        min_zoom: 10
+        include_when:
+          highway:
+            - path
+            - track
+            - footway
+            - cycleway
+            - bridleway
+        exclude_when:
+          footway:
+            - sidewalk
+            - crossing
+        attributes:
+          - key: class
+            tag_value: highway
+          - key: name
+            min_zoom: 12
+            tag_value: name
+          - key: surface
+            min_zoom: 12
+            tag_value: surface
+          - key: smoothness
+            min_zoom: 12
+            tag_value: smoothness
+          - key: tracktype
+            min_zoom: 12
+            tag_value: tracktype
+          - key: mtb_scale
+            min_zoom: 10
+            tag_value: mtb:scale
+          - key: mtb_scale_imba
+            min_zoom: 10
+            tag_value: mtb:scale:imba
+          - key: sac_scale
+            min_zoom: 10
+            tag_value: sac_scale
+          - key: bicycle
+            min_zoom: 12
+            tag_value: bicycle
+          - key: foot
+            min_zoom: 12
+            tag_value: foot
+          - key: horse
+            min_zoom: 12
+            tag_value: horse
+          - key: width
+            min_zoom: 13
+            tag_value: width
+
+  - id: places
+    features:
+      - source: osm
+        geometry: point
+        min_zoom:
+          default_value: 12
+          overrides:
+            3:
+              place: city
+            6:
+              place: town
+            9:
+              place: village
+        include_when:
+          place:
+            - city
+            - town
+            - village
+            - hamlet
+            - suburb
+            - locality
+        attributes:
+          - key: class
+            tag_value: place
+          - key: name
+            tag_value: name
+
+  - id: peaks
+    features:
+      - source: osm
+        geometry: point
+        min_zoom: 11
+        include_when:
+          __all__:
+            natural: peak
+            name: __any__
+        attributes:
+          - key: name
+            tag_value: name
+          - key: ele
+            tag_value: ele

@@ -131,8 +131,7 @@ and is left for a later note once hillshade is proven.
 
 ## Permissions
 
-None added. No network permission use for the map, so `INTERNET` can be
-dropped once the demo style is gone, unless a later feature needs it.
+None added. The map makes no network requests; dropping `INTERNET` is left for later (see the spike answers).
 
 ## Left out of the first version
 
@@ -165,9 +164,21 @@ dropped once the demo style is gone, unless a later feature needs it.
 5. Before shipping terrain, read the full Open Government Licence - Canada and
    Copernicus terms and the Mapterhorn attribution wording.
 
-## Open questions to settle in #21
+## Answers from the #21 spike (2026-10-19)
 
-- Does `getExternalFilesDir` accept `adb push` on API 36?
-- Do bundled `asset://` glyphs load on MapLibre Native Android 13.7.1?
-- Does the `basemaps-assets` licence allow reuse of its glyphs?
-- Terrain file size for a 10 by 13 km region.
+- `adb push` into `/sdcard/Android/data/ca.mytrails.app/files/regions/` works on
+  the API 36 emulator with no permission. The app creates the folder on start.
+- Bundled `asset://style/glyphs/{fontstack}/{range}.pbf` glyphs load on MapLibre
+  Native Android 13.7.1 (labels render with no network).
+- The `basemaps-assets` fonts are SIL OFL (Noto Sans). Regular and Medium, five
+  Latin ranges each, are bundled (about 1 MB) with the licence text beside them.
+- The Roberts Creek and Largo Road region built with `trails.yml` is 1.4 MB
+  (the ADR experiment had fewer layers).
+- `INTERNET` stays in the manifest for now. The map no longer uses it, but
+  MapLibre's HTTP stack has not been checked without it.
+
+## Still open
+
+- Terrain (hillshade) is not built. Tracked as its own issue: terrain file size,
+  whether a `raster-dem` source works from a local PMTiles file, and the full
+  licence texts.

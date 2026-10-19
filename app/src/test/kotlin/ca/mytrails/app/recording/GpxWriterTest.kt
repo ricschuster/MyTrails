@@ -66,6 +66,14 @@ class GpxWriterTest {
     }
 
     @Test
+    fun pointWithUnknownTimeHasNoTimeElement() {
+        val root = parse(gpx(segments = listOf(listOf(point(time = 0), point(time = t0)))))
+        val pts = root.all("trkpt")
+        assertEquals(0, (pts.item(0) as Element).all("time").length)
+        assertEquals(1, (pts.item(1) as Element).all("time").length)
+    }
+
+    @Test
     fun timesAreUtcWithMilliseconds() {
         val root = parse(gpx(segments = listOf(listOf(point(), point(time = t0 + 1_000)))))
         assertEquals("2026-10-19T03:54:32.812Z", root.all("time").item(0).textContent)

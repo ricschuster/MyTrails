@@ -33,7 +33,8 @@ object GpxWriter {
             for (p in segment) {
                 out.append("      <trkpt lat=\"${coordinate(p.latitude)}\" lon=\"${coordinate(p.longitude)}\">\n")
                 p.altitude?.let { out.append("        <ele>${String.format(Locale.ROOT, "%.1f", it)}</ele>\n") }
-                out.append("        <time>${formatTime(p.timeMillis)}</time>\n")
+                // A time of 0 means unknown (an imported point without one); do not invent 1970.
+                if (p.timeMillis > 0) out.append("        <time>${formatTime(p.timeMillis)}</time>\n")
                 out.append("      </trkpt>\n")
             }
             out.append("    </trkseg>\n")

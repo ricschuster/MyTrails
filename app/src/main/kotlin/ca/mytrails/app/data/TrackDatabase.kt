@@ -13,7 +13,9 @@ import androidx.room.PrimaryKey
 import androidx.room.Query
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.withTransaction
 import androidx.sqlite.db.SupportSQLiteDatabase
+import ca.mytrails.app.recording.ImportedTrack
 import kotlinx.coroutines.flow.Flow
 
 /** Track lifecycle states, stored as strings so the schema stays readable. */
@@ -67,6 +69,9 @@ interface TrackDao {
 
     @Insert
     suspend fun insertPoint(point: PointEntity)
+
+    @Insert
+    suspend fun insertPoints(points: List<PointEntity>)
 
     @Query("UPDATE track SET state = :state WHERE id = :id")
     suspend fun setState(
@@ -148,3 +153,39 @@ abstract class TrackDatabase : RoomDatabase() {
             }
     }
 }
+
+/** Saves imported tracks and all their points in one transaction. Returns the new track ids. */
+suspend fun TrackDatabase.saveImported(tracks: List<ImportedTrack>): List<Long> =
+    withTransaction {
+        val dao = trackDao()
+        tracks.map { t ->
+            val id =
+                dao.insertTrack(
+                    TrackEntity(
+                        name = t.name,
+                        startTimeMillis = t.startTimeMillis,
+                        endTimeMillis = t.endTimeMillis,
+                        state = TrackState.COMPLETED,
+                        distanceMeters = t.distanceMeters,
+                        durationMillis = t.durationMillis,
+                    ),
+                )
+            t.segments.forEachIndexed { index, segment ->
+                dao.insertPoints(
+                    segment.map {
+                        PointEntity(
+                            trackId = id,
+                            segment = index,
+                            latitude = it.latitude,
+                            longitude = it.longitude,
+                            timeMillis = it.timeMillis,
+                            altitude = it.altitude,
+                            accuracyMeters = it.accuracyMeters,
+                            speedMetersPerSecond = it.speedMetersPerSecond,
+                        )
+                    },
+                )
+            }
+            id
+        }
+    }

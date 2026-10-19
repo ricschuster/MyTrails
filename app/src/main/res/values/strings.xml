@@ -29,4 +29,14 @@
     <string name="region_unreadable">%1$s  \u00b7  not a readable PMTiles file</string>
     <string name="delete_region_title">Delete %1$s?</string>
     <string name="osm_attribution">\u00a9 OpenStreetMap contributors</string>
+    <string name="import_gpx">Import</string>
+    <plurals name="import_done">
+        <item quantity="one">Imported %d track</item>
+        <item quantity="other">Imported %d tracks</item>
+    </plurals>
+    <string name="import_not_valid">The file is not valid GPX</string>
+    <string name="import_not_gpx">The file is not a GPX file</string>
+    <string name="import_no_tracks">No tracks found in the file</string>
+    <string name="import_too_large">The file is too large</string>
+    <string name="import_unreadable">Could not read the file</string>
 </resources>

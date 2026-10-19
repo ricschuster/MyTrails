@@ -12,4 +12,13 @@
     <string name="discard_message">This track has fewer than 2 points and will not be saved.</string>
     <string name="discard">Discard</string>
     <string name="cancel">Cancel</string>
+    <string name="tracks">Tracks</string>
+    <string name="back">Back</string>
+    <string name="no_tracks">No saved tracks yet.</string>
+    <string name="rename">Rename</string>
+    <string name="save">Save</string>
+    <string name="delete">Delete</string>
+    <string name="delete_title">Delete track?</string>
+    <string name="state_interrupted">Interrupted</string>
+    <string name="state_recording">Recording</string>
 </resources>

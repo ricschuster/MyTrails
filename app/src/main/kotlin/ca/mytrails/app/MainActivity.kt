@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -27,10 +29,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import ca.mytrails.app.data.TrackDatabase
 import ca.mytrails.app.recording.RecordingService
 import ca.mytrails.app.recording.RecordingStatus
 import ca.mytrails.app.recording.formatDistance
 import ca.mytrails.app.recording.formatElapsed
+import ca.mytrails.app.ui.TrackViewScreen
+import ca.mytrails.app.ui.TracksScreen
+import kotlinx.coroutines.launch
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -58,19 +65,55 @@ import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 
 // Placeholder online style for the first milestone. Offline tiles are a later ADR.
-private const val STYLE_URL = "https://demotiles.maplibre.org/style.json"
+internal const val STYLE_URL = "https://demotiles.maplibre.org/style.json"
 private const val TRACKING_ZOOM = 12.0
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         MapLibre.getInstance(this)
-        setContent { HelloMap() }
+        // A kill or reboot can leave a track open; if nothing is recording, mark it interrupted.
+        lifecycleScope.launch {
+            if (RecordingService.state.value.status == RecordingStatus.IDLE) {
+                TrackDatabase.get(applicationContext).trackDao().markOpenTracksInterrupted()
+            }
+        }
+        setContent { App() }
+    }
+}
+
+private sealed interface Screen {
+    data object Map : Screen
+
+    data object Tracks : Screen
+
+    data class Track(
+        val id: Long,
+    ) : Screen
+}
+
+@Composable
+private fun App() {
+    var screen by remember { mutableStateOf<Screen>(Screen.Map) }
+    // The map screen stays composed so its map and location component survive a visit to the list.
+    Box(Modifier.fillMaxSize()) {
+        MapScreen(onShowTracks = { screen = Screen.Tracks })
+        when (val s = screen) {
+            Screen.Map -> Unit
+            Screen.Tracks -> {
+                BackHandler { screen = Screen.Map }
+                TracksScreen(onOpen = { screen = Screen.Track(it) }, onBack = { screen = Screen.Map })
+            }
+            is Screen.Track -> {
+                BackHandler { screen = Screen.Tracks }
+                TrackViewScreen(trackId = s.id, onBack = { screen = Screen.Tracks })
+            }
+        }
     }
 }
 
 @Composable
-private fun HelloMap() {
+private fun MapScreen(onShowTracks: () -> Unit) {
     val context = LocalContext.current
     var hasLocation by remember {
         mutableStateOf(
@@ -125,6 +168,14 @@ private fun HelloMap() {
             hasLocation = hasLocation,
             modifier = Modifier.align(Alignment.BottomCenter),
         )
+        Surface(
+            modifier = Modifier.align(Alignment.TopStart).safeDrawingPadding().padding(8.dp),
+            shape = MaterialTheme.shapes.large,
+            tonalElevation = 6.dp,
+            shadowElevation = 6.dp,
+        ) {
+            TextButton(onClick = onShowTracks) { Text(stringResource(R.string.tracks)) }
+        }
     }
 }
 
@@ -250,7 +301,7 @@ private fun enableLocation(
 }
 
 @Composable
-private fun rememberMapView(): MapView {
+internal fun rememberMapView(): MapView {
     val context = LocalContext.current
     val mapView = remember { MapView(context) }
     val lifecycle = LocalLifecycleOwner.current.lifecycle

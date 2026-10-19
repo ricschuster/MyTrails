@@ -162,13 +162,18 @@ class RecordingService : Service() {
         locationManager.removeUpdates(listener)
         ticker?.cancel()
         val endMillis = System.currentTimeMillis()
+        if (mutableState.value.status == RecordingStatus.RECORDING) {
+            activeMillis += SystemClock.elapsedRealtime() - resumedAt
+        }
+        val distance = session.distanceMeters
+        val duration = activeMillis
         writes.trySend {
             trackId?.let { id ->
                 // A track with fewer than 2 points is discarded; the UI confirms first.
                 if (dao.pointCount(id) < 2) {
                     dao.deleteTrack(id)
                 } else {
-                    dao.finish(id, TrackState.COMPLETED, endMillis)
+                    dao.finish(id, TrackState.COMPLETED, endMillis, distance, duration)
                 }
             }
             stopForegroundAndSelf()
@@ -214,8 +219,11 @@ class RecordingService : Service() {
                 ),
             ) ?: return
         val seg = segment
+        val distance = session.distanceMeters
+        val duration = activeMillis + SystemClock.elapsedRealtime() - resumedAt
         writes.trySend {
             trackId?.let { id ->
+                dao.updateProgress(id, distance, duration)
                 dao.insertPoint(
                     PointEntity(
                         trackId = id,

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawingPadding
 import androidx.compose.material3.MaterialTheme
@@ -24,8 +25,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import ca.mytrails.app.R
-import ca.mytrails.app.STYLE_URL
 import ca.mytrails.app.data.TrackDatabase
+import ca.mytrails.app.maps.loadStyle
 import ca.mytrails.app.data.TrackEntity
 import ca.mytrails.app.recording.formatDistance
 import ca.mytrails.app.recording.formatElapsed
@@ -52,7 +53,8 @@ fun TrackViewScreen(
     trackId: Long,
     onBack: () -> Unit,
 ) {
-    val dao = TrackDatabase.get(LocalContext.current).trackDao()
+    val context = LocalContext.current
+    val dao = TrackDatabase.get(context).trackDao()
     var track by remember { mutableStateOf<TrackEntity?>(null) }
     val mapView = rememberMapView()
     val exportGpx = rememberGpxExporter()
@@ -66,8 +68,9 @@ fun TrackViewScreen(
                 .groupBy { it.segment }
                 .values
                 .map { points -> points.map { Point.fromLngLat(it.longitude, it.latitude) } }
+        val loaded = loadStyle(context)
         mapView.getMapAsync { map ->
-            map.setStyle(STYLE_URL) { style ->
+            map.setStyle(loaded.builder) { style ->
                 // A segment needs 2 points to be a line.
                 val lines = segments.filter { it.size >= 2 }.map { LineString.fromLngLats(it) }
                 style.addSource(GeoJsonSource(SOURCE_ID, Feature.fromGeometry(MultiLineString.fromLineStrings(lines))))
@@ -94,6 +97,11 @@ fun TrackViewScreen(
 
     Box(Modifier.fillMaxSize()) {
         AndroidView(factory = { mapView }, modifier = Modifier.fillMaxSize())
+        Text(
+            stringResource(R.string.osm_attribution),
+            modifier = Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(start = 4.dp, bottom = 2.dp),
+            style = MaterialTheme.typography.labelSmall,
+        )
         Surface(
             modifier = Modifier.safeDrawingPadding().padding(8.dp).align(Alignment.TopStart),
             shape = MaterialTheme.shapes.large,

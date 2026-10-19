@@ -13,7 +13,7 @@ A GPS and mapping app for my own Android phone. Single user, sideloaded, no Play
 
 ## Project status
 
-Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). The app shows a map and the live position, records tracks in a foreground service into Room (`docs/design/02_track_recording.md`, ADR 0003), and lists and views saved tracks. Next are GPX export and offline maps. Not yet run outdoors on a physical phone with the screen off.
+Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). The app shows a map and the live position, records tracks in a foreground service into Room (`docs/design/02_track_recording.md`, ADR 0003), lists and views saved tracks, exports them as GPX, and draws an offline map from PMTiles region files (`docs/design/04_offline_maps.md`, ADR 0004). Next are GPX import and hillshade. Not yet run outdoors on a physical phone with the screen off.
 
 ## Scope
 

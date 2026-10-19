@@ -31,10 +31,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import ca.mytrails.app.data.TrackDatabase
+import ca.mytrails.app.maps.Region
+import ca.mytrails.app.maps.loadStyle
 import ca.mytrails.app.recording.RecordingService
 import ca.mytrails.app.recording.RecordingStatus
 import ca.mytrails.app.recording.formatDistance
 import ca.mytrails.app.recording.formatElapsed
+import ca.mytrails.app.ui.RegionsScreen
 import ca.mytrails.app.ui.TrackViewScreen
 import ca.mytrails.app.ui.TracksScreen
 import kotlinx.coroutines.launch
@@ -42,6 +45,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -64,8 +68,6 @@ import org.maplibre.android.maps.MapLibreMap
 import org.maplibre.android.maps.MapView
 import org.maplibre.android.maps.Style
 
-// Placeholder online style for the first milestone. Offline tiles are a later ADR.
-internal const val STYLE_URL = "https://demotiles.maplibre.org/style.json"
 private const val TRACKING_ZOOM = 12.0
 
 class MainActivity : ComponentActivity() {
@@ -87,6 +89,8 @@ private sealed interface Screen {
 
     data object Tracks : Screen
 
+    data object Regions : Screen
+
     data class Track(
         val id: Long,
     ) : Screen
@@ -95,11 +99,25 @@ private sealed interface Screen {
 @Composable
 private fun App() {
     var screen by remember { mutableStateOf<Screen>(Screen.Map) }
+    // Bumped when the Regions screen closes so the map reloads its style with the current files.
+    var styleVersion by remember { mutableIntStateOf(0) }
     // The map screen stays composed so its map and location component survive a visit to the list.
     Box(Modifier.fillMaxSize()) {
-        MapScreen(onShowTracks = { screen = Screen.Tracks })
+        MapScreen(
+            styleVersion = styleVersion,
+            onShowTracks = { screen = Screen.Tracks },
+            onShowRegions = { screen = Screen.Regions },
+        )
         when (val s = screen) {
             Screen.Map -> Unit
+            Screen.Regions -> {
+                val close = {
+                    styleVersion++
+                    screen = Screen.Map
+                }
+                BackHandler(onBack = close)
+                RegionsScreen(onBack = close)
+            }
             Screen.Tracks -> {
                 BackHandler { screen = Screen.Map }
                 TracksScreen(onOpen = { screen = Screen.Track(it) }, onBack = { screen = Screen.Map })
@@ -113,7 +131,11 @@ private fun App() {
 }
 
 @Composable
-private fun MapScreen(onShowTracks: () -> Unit) {
+private fun MapScreen(
+    styleVersion: Int,
+    onShowTracks: () -> Unit,
+    onShowRegions: () -> Unit,
+) {
     val context = LocalContext.current
     var hasLocation by remember {
         mutableStateOf(
@@ -141,15 +163,12 @@ private fun MapScreen(onShowTracks: () -> Unit) {
     var map by remember { mutableStateOf<MapLibreMap?>(null) }
     var style by remember { mutableStateOf<Style?>(null) }
 
-    LaunchedEffect(mapView) {
+    LaunchedEffect(mapView, styleVersion) {
+        val loaded = loadStyle(context)
         mapView.getMapAsync { m ->
-            m.cameraPosition =
-                CameraPosition
-                    .Builder()
-                    .target(LatLng(49.28, -123.12))
-                    .zoom(4.0)
-                    .build()
-            m.setStyle(STYLE_URL) { s ->
+            // Only the first load picks a starting view; later reloads keep where the user is looking.
+            if (map == null) m.cameraPosition = initialCamera(loaded.regions)
+            m.setStyle(loaded.builder) { s ->
                 map = m
                 style = s
             }
@@ -174,8 +193,16 @@ private fun MapScreen(onShowTracks: () -> Unit) {
             tonalElevation = 6.dp,
             shadowElevation = 6.dp,
         ) {
-            TextButton(onClick = onShowTracks) { Text(stringResource(R.string.tracks)) }
+            Row {
+                TextButton(onClick = onShowTracks) { Text(stringResource(R.string.tracks)) }
+                TextButton(onClick = onShowRegions) { Text(stringResource(R.string.regions)) }
+            }
         }
+        Text(
+            stringResource(R.string.osm_attribution),
+            modifier = Modifier.align(Alignment.BottomStart).navigationBarsPadding().padding(start = 4.dp, bottom = 2.dp),
+            style = MaterialTheme.typography.labelSmall,
+        )
     }
 }
 
@@ -272,6 +299,16 @@ private fun RecordingControls(
             },
         )
     }
+}
+
+/** Starts on the first installed region, or the whole world when there is none. */
+private fun initialCamera(regions: List<Region>): CameraPosition {
+    val bounds = regions.firstNotNullOfOrNull { it.bounds } ?: return CameraPosition.Builder().target(LatLng(0.0, 0.0)).zoom(1.0).build()
+    return CameraPosition
+        .Builder()
+        .target(LatLng(bounds.centerLat, bounds.centerLon))
+        .zoom(bounds.centerZoom.toDouble())
+        .build()
 }
 
 @SuppressLint("MissingPermission")

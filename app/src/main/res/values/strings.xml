@@ -24,4 +24,9 @@
     <string name="export">Export</string>
     <string name="export_done">Track exported as GPX</string>
     <string name="export_failed">Export failed</string>
+    <string name="regions">Map regions</string>
+    <string name="no_regions">No map regions installed. Copy a .pmtiles file to the regions folder with adb.</string>
+    <string name="region_unreadable">%1$s  \u00b7  not a readable PMTiles file</string>
+    <string name="delete_region_title">Delete %1$s?</string>
+    <string name="osm_attribution">\u00a9 OpenStreetMap contributors</string>
 </resources>

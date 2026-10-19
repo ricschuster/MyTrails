@@ -1,0 +1,84 @@
+[
+  {
+    "id": "landuse{{r}}", "type": "fill", "source": "region{{r}}", "source-layer": "landuse",
+    "paint": {
+      "fill-color": ["match", ["get", "class"],
+        ["forest", "wood"], "#d6e6c3",
+        ["scrub", "grassland", "meadow", "grass", "farmland"], "#e4ecd0",
+        "wetland", "#cfe3d9",
+        ["bare_rock", "scree"], "#e2ddd6",
+        ["residential", "commercial", "industrial"], "#e6e1d8",
+        ["park", "nature_reserve", "national_park", "protected_area", "golf_course"], "#dcebc9",
+        "#ebe7df"]
+    }
+  },
+  {
+    "id": "water{{r}}", "type": "fill", "source": "region{{r}}", "source-layer": "water",
+    "paint": {"fill-color": "#a7cdf2"}
+  },
+  {
+    "id": "waterway{{r}}", "type": "line", "source": "region{{r}}", "source-layer": "waterway",
+    "paint": {
+      "line-color": "#a7cdf2",
+      "line-width": ["interpolate", ["linear"], ["zoom"], 9, 0.6, 15, ["match", ["get", "class"], "river", 4, 1.5]]
+    }
+  },
+  {
+    "id": "roads{{r}}", "type": "line", "source": "region{{r}}", "source-layer": "roads",
+    "layout": {"line-cap": "round", "line-join": "round"},
+    "paint": {
+      "line-color": ["match", ["get", "class"],
+        ["motorway", "motorway_link", "trunk", "trunk_link"], "#e9a05a",
+        ["primary", "primary_link", "secondary", "secondary_link"], "#f2c66d",
+        "#ffffff"],
+      "line-width": ["interpolate", ["linear"], ["zoom"],
+        5, 0.8,
+        10, ["match", ["get", "class"], ["motorway", "trunk", "primary"], 2.5, 1.2],
+        15, ["match", ["get", "class"], ["motorway", "trunk", "primary", "secondary"], 7, ["service", "living_street"], 3, 5]]
+    }
+  },
+  {
+    "id": "trails{{r}}", "type": "line", "source": "region{{r}}", "source-layer": "trails",
+    "layout": {"line-cap": "round", "line-join": "round"},
+    "paint": {
+      "line-color": ["case",
+        ["has", "mtb_scale_imba"], ["match", ["get", "mtb_scale_imba"], ["0", "1"], "#2e9e4f", "2", "#2f6fd1", "3", "#1a1a1a", "#7b2d8e"],
+        ["has", "mtb_scale"], ["match", ["get", "mtb_scale"], "0", "#2e9e4f", "1", "#2f6fd1", "2", "#1a1a1a", "#7b2d8e"],
+        "#b5651d"],
+      "line-width": ["interpolate", ["linear"], ["zoom"], 10, 0.8, 14, 2, 17, 4],
+      "line-dasharray": [2, 1.2]
+    }
+  },
+  {
+    "id": "place-labels{{r}}", "type": "symbol", "source": "region{{r}}", "source-layer": "places",
+    "layout": {
+      "text-field": ["get", "name"],
+      "text-font": ["Noto Sans Medium"],
+      "text-size": ["match", ["get", "class"], ["city", "town"], 16, ["village"], 14, 12]
+    },
+    "paint": {"text-color": "#333333", "text-halo-color": "#ffffff", "text-halo-width": 1.5}
+  },
+  {
+    "id": "water-labels{{r}}", "type": "symbol", "source": "region{{r}}", "source-layer": "water",
+    "filter": ["has", "name"],
+    "layout": {"text-field": ["get", "name"], "text-font": ["Noto Sans Regular"], "text-size": 12},
+    "paint": {"text-color": "#3b6ea5", "text-halo-color": "#ffffff", "text-halo-width": 1}
+  },
+  {
+    "id": "road-labels{{r}}", "type": "symbol", "source": "region{{r}}", "source-layer": "roads",
+    "minzoom": 13, "filter": ["has", "name"],
+    "layout": {"symbol-placement": "line", "text-field": ["get", "name"], "text-font": ["Noto Sans Regular"], "text-size": 11},
+    "paint": {"text-color": "#444444", "text-halo-color": "#ffffff", "text-halo-width": 1.5}
+  },
+  {
+    "id": "trail-labels{{r}}", "type": "symbol", "source": "region{{r}}", "source-layer": "trails",
+    "minzoom": 14, "filter": ["has", "name"],
+    "layout": {"symbol-placement": "line", "text-field": ["get", "name"], "text-font": ["Noto Sans Regular"], "text-size": 11},
+    "paint": {"text-color": "#7a4a14", "text-halo-color": "#ffffff", "text-halo-width": 1.5}
+  },
+  {
+    "id": "peak-labels{{r}}", "type": "symbol", "source": "region{{r}}", "source-layer": "peaks",
+    "layout": {"text-field": ["get", "name"], "text-font": ["Noto Sans Regular"], "text-size": 11, "text-anchor": "top", "text-offset": [0, 0.4]},
+    "paint": {"text-color": "#6b5a4a", "text-halo-color": "#ffffff", "text-halo-width": 1.2}
+  }
+]

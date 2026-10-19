@@ -1,0 +1,11 @@
+{
+  "version": 8,
+  "name": "MyTrails",
+  "glyphs": "asset://style/glyphs/{fontstack}/{range}.pbf",
+  "sources": {
+{{sources}}
+  },
+  "layers": [
+    {"id": "background", "type": "background", "paint": {"background-color": "#f2efe9"}}{{layers}}
+  ]
+}

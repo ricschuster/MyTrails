@@ -1,4 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">MyTrails</string>
+    <string name="recording_channel">Recording</string>
+    <string name="recording_active">Recording track</string>
+    <string name="recording_paused">Recording paused</string>
+    <string name="record">Record</string>
+    <string name="pause">Pause</string>
+    <string name="resume">Resume</string>
+    <string name="stop">Stop</string>
+    <string name="discard_title">Discard track?</string>
+    <string name="discard_message">This track has fewer than 2 points and will not be saved.</string>
+    <string name="discard">Discard</string>
+    <string name="cancel">Cancel</string>
 </resources>

@@ -13,7 +13,7 @@ A GPS and mapping app for my own Android phone. Single user, sideloaded, no Play
 
 ## Project status
 
-Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). The app shows a map and the live position, records tracks in a foreground service into Room (`docs/design/02_track_recording.md`, ADR 0003), lists and views saved tracks, exports and imports GPX, and draws an offline map from PMTiles region files with optional hillshade (`docs/design/04_offline_maps.md`, ADR 0004). The marker follows the position and a Re-centre button resumes following after a pan. Recording survived an 11 minute outdoor walk with the screen off on a Pixel 9 Pro, unplugged. A trail outing of an hour or more is still to do.
+Early build. Core features and MVP scope are in the brief and the stack is chosen (ADR 0002). The app shows a map and the live position, records tracks in a foreground service into Room (`docs/design/02_track_recording.md`, ADR 0003), lists and views saved tracks, exports and imports GPX, and draws an offline map from PMTiles region files with optional hillshade (`docs/design/04_offline_maps.md`, ADR 0004). The marker follows the position and a Re-centre button resumes following after a pan. Recording survived an 11 minute outdoor walk with the screen off on a Pixel 9 Pro, unplugged. A trail outing of an hour or more is still to do. The MVP is built; post-MVP work is planned in `docs/design/07_roadmap.md` as GitHub milestones M6 to M11, starting with M6 Daily use.
 
 ## Scope
 

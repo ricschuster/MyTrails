@@ -10,7 +10,7 @@ ktlintPlugin = "13.0.0"
 room = "2.8.5"
 ksp = "2.3.12"
 coreKtx = "1.17.0"
-coroutines = "1.10.2"
+coroutines = "1.11.0"
 
 [libraries]
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "activityCompose" }
